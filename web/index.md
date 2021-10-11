@@ -44,8 +44,7 @@ Girona](http://www.udg.edu) sibce Mar 2010.\
 [![GIIG logo](giign-ppt.png) Grupo de Investigación en Informática
 Gráfica](http://giig.ugr.es/) of the [Universidad de
 Granada](http://www.ugr.es) from Feb 2002 to Nov 2012.\
-[![Tarvis
-logo](https://lsi.ugr.es/lsi/system/files/imagecache/grupo_pagina/logos_grupos/logo-tarvis-2.png)
+[![Tarvis logo](logoTarvis.png)
 Grupo de Investigación en Tecnologías y Aplicaciones de Realidad
 Virtual, Interacción y Simulación](http://tarvis.ugr.es/) of the
 [Universidad de Granada](http://www.ugr.es) since Dec 2012.
