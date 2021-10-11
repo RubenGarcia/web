@@ -48,7 +48,7 @@ Granada](http://www.ugr.es) from Feb 2002 to Nov 2012.\
 logo](https://lsi.ugr.es/lsi/system/files/imagecache/grupo_pagina/logos_grupos/logo-tarvis-2.png)
 Grupo de Investigación en Tecnologías y Aplicaciones de Realidad
 Virtual, Interacción y Simulación](http://tarvis.ugr.es/) of the
-[Universidad de Granada](http://www.ugr.es) since Dec 2012.\
+[Universidad de Granada](http://www.ugr.es) since Dec 2012.
 
 Software:
 ---------
