@@ -842,7 +842,4 @@ at UKHEC (now at the internet archive).\
 page](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.122.5300)\
 [PDF](../epcc/Garcia01.pdf) local copy
 
-[![Valid XHTML 1.1](../w3.org/valid-xhtml11.png){width="88"
-height="31"}](http://validator.w3.org/check?uri=referer)
-
-[Rubén García's Web Page](..)
+[Rubén García's Web Page](../index.md)
