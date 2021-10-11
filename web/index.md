@@ -125,10 +125,3 @@ Sites](https://sites.google.com/site/rubengarciahernandez/), [IMA @
 UdG](http://ima.udg.es/~rgarcia), [UGR](http://www.ugr.es/~ruben)
 
 [Anti Spam](http://www.auditmypc.com/freescan/antispam.html)
-
-[![Leibniz-Rechenzentrum der Bayerischen Akademie der
-Wissenschaften](http://www.lrz.de/styles2/images/links2.jpg)](http://www.lrz.de/ "Webserver gehostet am Leibniz-Rechenzentrum")
-
-Dieser Webserver wird gehostet am
-[Leibniz-Rechenzentrum](http://www.lrz.de/) der [Bayerischen Akademie
-der Wissenschaften](http://www.badw.de/)
