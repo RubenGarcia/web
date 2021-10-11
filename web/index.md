@@ -13,22 +13,22 @@ Webpage at [LRZ](https://www.lrz.de/persons/garcia-hernandez_ruben/),
 
 [ ]{#badgeCont481471 style="width:126px"}
 
-[Publicaciones / Articles](publicaciones)
+[Publicaciones / Articles](publicaciones/index.md)
 -----------------------------------------
 
-[Docencia / Teaching](docencia)
+[Docencia / Teaching](docencia/index.md)
 -------------------------------
 
 [Charlas / Talks](charlas.html)
 -------------------------------
 
-[Proyectos de investigación / Research Projects](proyectos)
+[Proyectos de investigación / Research Projects](proyectos/index.md)
 -----------------------------------------------------------
 
-[Becas / Grants](becas)
+[Becas / Grants](becas/index.md)
 -----------------------
 
-[Estancias / Stays](estancias)
+[Estancias / Stays](estancias/index.md)
 ------------------------------
 
 [Grupos de Investigación / Research Groups](grupo.html):
