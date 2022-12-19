@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<link rel="stylesheet" href="../carlos.css" type="text/css" />
+<title>AP2001-3238 Estudio y Desarrollo de técnicas interactivas de iluminación 
+global</title>
+</head>
+<body>
+<h1>AP2001-3238 Estudio y Desarrollo de técnicas interactivas de iluminación
+ global</h1>
+<p>
+<a href="http://www.educacion.es/educacion/universidades/convocatorias/titulados-doctores-profesores/fpu.html">Formación de Profesorado Universitario</a>, 
+Ministerio de Educaci&oacute;n <br/>
+Desde: 01/02/2002 Hasta: 31/10/2004 (2 años, 9 meses; prorrogable a 4 años)<br/>
+Concesión y Renovaciones anuales: 
+2002-2004
+</p>
+<h2>Resumen de la solicitud del proyecto</h2>
+<p>
+Dentro del amplio área de las tecnologías de la información, uno de los campos de investigación y desarrollo actuales es el de los Gráficos por Ordenador (Computer Graphics). Este campo de trabajo trata sobre los aspectos teóricos y prácticos de la creación de imágenes sintéticas por ordenador, y tiene numerosas aplicaciones en la actualidad debido al recurso a la informática como ayuda a la producción de imágenes y animaciones de todo tipo.
+</p><p>
+A su vez, los Gráficos por Ordenador se dividen en numerosas especialidades, dada la amplitud de aplicaciones y técnicas diferentes. Una de ellas es la síntesis de imágenes realistas, especialidad de trabajo del director de la tesis. La síntesis de imágenes realistas persigue el desarrollo de aplicaciones informáticas que sirvan para la creación de imágenes con alto grado de realismo, indistinguibles en la práctica de las Imágenes reales. Dentro de esta especialidad el director de la tesis ha estudiado la aplicación de las técnicas de Monte-Cario. Estas técnicas permiten llevar a cabo simulaciones y/o emulaciones computacionales del flujo de radiación electromagnética visible en escenarios virtuales, y permiten producir imágenes bastante realistas en tiempos de cálculo altos.
+</p><p>
+En la actualidad, y dentro del grupo de investigación al cual el director pertenece se está trabajando en aumentar la "usabilidad" de los programas de síntesis de imágenes realistas Estos trabajos se dividen en varias vertientes: reducción de tiempos de cálculo, aumento de la complejidad de los modelos geométricos subyacentes, y desarrollo de interfaces sencillas e intuitivas para usuarios finales.
+</p><p>
+En el contexto de las anteriores líneas de trabajo, y más concretamente dentro de la línea sobre reducción de tiempos de cálculo, se está trabajando en el diseño e implementación de algoritmos "rápidos" para simulación de iluminación. Esto pretende solventar uno de los problemas más importantes para la puesta en práctica de estas técnicas, como es el de la necesidad de ejecutar simulaciones que pueden tardar del orden de horas para escenas de complejidad mediana o alta. Estos retrasos muchas veces no son aceptables por el usuario final. Nuestro objetivo consiste en diseñar algoritmos que tarden tiempos del orden de minutos, sin que por ello la calidad de la solución se vea resentida.
+</p><p>
+En el caso de que la presente solicitud fuese aceptada, se haría posible abrir una nueva línea de trabajo sobre otros algoritmos rápidos adaptados a aplicaciones específicas. En concreto las técnicas de visualización realista han encontrado un campo de aplicación en el desarrollo de videojuegos, siendo estos actualmente un tipo de software con un enorme mercado. Los videjuegos ganan en realismo gracias al continuo incremento de la capacidad de cálculo de los ordenadores personales. Esto permite que cada vez nuevas técnicas de realismo visual se incorporen a los videojuegos: por ejemplo, podemos citar las texturas, el cálculo previo de la iluminación para los escenarios estáticos, y finalmente la posibilidad de calcular en tiempo real algunos aspectos de la iluminación de los personajes en movimiento.
+</p><p>
+Nuestro proyecto para esta solicitud consiste en adaptar los algoritmos rápidos de calculo de iluminación para su aplicación en videojuegos. En este tipo de sistemas, la necesidad de una respuesta en tiempo real limita enormemente las posibilidades de cálculo. En estas condiciones se hace necesario adaptar los algoritmos para que pueden funcionar en tiempos del orden de milésimas de segundo. Aún cuando la velocidad de los procesadores aumenta constantemente, es necesario realizar determinadas simplificaciones para poder lograr este objetivo de reducción de tiempos. Estas simplificaciones nos permiten encontrar una solución visualmente aceptable, aunque no sea completamente correcta desde el punto de vista físico.
+</p><p>
+Como plan de trabajo nos proponemos realizar una revisión bibliográfica de las publicaciones que hasta la fecha se centran bien directamente en técnicas de realismo aplicables a videojuegos, bien en técnicas más generales pero con potencial de aplicación a nuestro objetivo. Asimismo, pretendemos estudiar los algoritmos rápidos desarrollados en el grupo de investigación del director de la tesis. Una vez realizado el estudio se seleccionarán las técnicas a aplicar, junto con las modificaciones o extensiones necesarias para adaptarlas al entorno concreto de los videojuegos.
+</p><p>
+Esta definición de las técnicas llevará al diseño e implementación de un prototipo operativo que nos permita experimentar la eficiencia y obtener datos sobre los dos parámetros relevantes: grado de realismo visual y tiempos de respuesta. En función de los resultados obtenidos se puede bien validar las técnicas definitivamente, bien proceder a realizar cambios en el análisis, diseño e implementación, en un típico caso de modelo de desarrollo de software basado en prototipos.
+
+</p>
+<h2>Financiación:</h2>
+<p>
+26 821 € 
+</p>
+<h2>Resultados:</h2>
+<p>Se ha diseñado un sistema de cálculo de iluminación que integra algoritmos de iluminación global
+usando Estimación de Densidades.
+Los algoritmos implementados son Impact Count (Arvo), Photon Maps (Jensen) y Estimación de densidades en el Plano Tangente (Ureña y Lastra).
+De este último algoritmo, se han implementado optimizaciones que usan indexación espacial para
+aceleración de los cálculos (Ray Cache) y se ha diseñado e implementado un nuevo algoritmo
+(Indexación de Discos)
+</p><p>
+Para cada algoritmo, se han estudiado e implementado los algoritmos que permiten recalcular
+incrementalmente la iluminación en siguientes fotogramas para un escenario quasi-estatico.
+También se ha estudiado la complejidad algorítmica de cada optimización y se ha hecho una comparación preliminar entre los distintos algoritmos.
+</p>
+<h3>Discusión:</h3>
+<p>
+Los algoritmos propuestos se probaron con escenas de complejidad media (unos 80 000 triángulos) Tienen unos tiempos de cálculo que permiten obtener desde interactividad (alrededor de un frame por segundo) hasta unos 10 frames por segundo.
+</p>
+<h3>Publicaciones:</h3>
+<h4>Interactive Global Illumination for Quasi-Static Scenes</h4>
+<p>R.J. Garc&iacute;a, C. Ure&ntilde;a, M. Lastra, R. Montes, J. Revelles<br/>
+<a href="http://www.ics.forth.gr/cgi2004/intro.html">
+CGI'2004 (Computer Graphics International)</a>
+Proceedings. pp. 128-131. Crete (Greece). 16-06-2004 a 19-06-2004.<br/>
+Published by the IEEE Computer Society.
+ISBN 0-7695-2171-1,
+ISSN 1530-1052<br/>
+<a href="../publicaciones/Garcia04.pdf">Article</a>
+<a href="../publicaciones/Garcia04slides.pdf">Slides</a>
+<a href="http://www.ics.forth.gr/cgi2004/main/accepted.html">Artículos aceptados</a>
+<br/>
+Indexado por INSPEC 2005<br/>
+Indexado por ISI Proceedings.<br/>
+Submissions: 172; Accepted 100; Ratio 58.1%
+</p>
+
+<h4>Estudio y desarrollo de técnicas interactivas de Iluminación Global</h4>
+<p>Rubén Jesús García Hernández (Director: Carlos Ureña Almagro)<br/>
+Memoria de Tesis Doctoral. Dpto de Lenguajes y Sistemas Informáticos.
+Universidad de Granada.<br/>
+Defensa: 23-07-2009<br/>
+Editorial de la Universidad de Granada. Depósito Legal: GR. 3303-2009. 
+ISBN: 978-84-692-5097-6<br/>
+<a href="http://adrastea.ugr.es/record=b1818892~S3*spi">Copia en la Biblioteca
+Universitaria de la Universidad de Granada</a><br/>
+<a href="../publicaciones/Garcia09.pdf">Copia local</a><br/>
+<a href="https://www.micinn.es/teseo/mostrarRef.do?ref=775989">Ficha Teseo</a>
+</p>
+
+<p>
+  <a href="http://validator.w3.org/check?uri=referer"><img
+            src="../w3.org/valid-xhtml11.png"
+            alt="Valid XHTML 1.1" height="31" width="88" /></a>
+</p>
+<p><a href="..">Rubén García's Web Page</a></p>  
+</body></html>
