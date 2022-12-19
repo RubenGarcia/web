@@ -1,0 +1,334 @@
+diff -ur linux-2.4.28.rc1.orig/Documentation/Configure.help linux-2.4.28.rc1/Documentation/Configure.help
+--- linux-2.4.28.rc1.orig/Documentation/Configure.help	2004-10-23 14:19:45.306082762 +0200
++++ linux-2.4.28.rc1/Documentation/Configure.help	2004-10-23 14:29:21.543193029 +0200
+@@ -28997,7 +28997,8 @@
+   Serpent cipher algorithm, by Anderson, Biham & Knudsen.
+ 
+   Keys are allowed to be from 0 to 256 bits in length, in steps
+-  of 8 bits.
++  of 8 bits. Also includes the 'Tnepres' algorithm, a reversed
++  variant of Serpent for compatibility with old kerneli code.
+ 
+   See also:
+   http://www.cl.cam.ac.uk/~rja14/serpent.html
+diff -ur linux-2.4.28.rc1.orig/crypto/serpent.c linux-2.4.28.rc1/crypto/serpent.c
+--- linux-2.4.28.rc1.orig/crypto/serpent.c	2004-02-18 14:36:31.000000000 +0100
++++ linux-2.4.28.rc1/crypto/serpent.c	2004-10-23 14:21:33.453463302 +0200
+@@ -4,6 +4,10 @@
+  * Serpent Cipher Algorithm.
+  *
+  * Copyright (C) 2002 Dag Arne Osvik <osvik@ii.uib.no>
++ *               2003 Herbert Valerio Riedel <hvr@gnu.org>
++ *
++ * Added tnepres support: Ruben Jesus Garcia Hernandez <ruben@ugr.es>, 18.10.2004
++ *               Based on code by hvr
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -212,7 +216,8 @@
+ 	u32 expkey[SERPENT_EXPKEY_WORDS];
+ };
+ 
+-static int setkey(void *ctx, const u8 *key, unsigned int keylen, u32 *flags)
++
++static int serpent_setkey(void *ctx, const u8 *key, unsigned int keylen, u32 *flags)
+ {
+ 	u32 *k = ((struct serpent_ctx *)ctx)->expkey;
+ 	u8  *k8 = (u8 *)k;
+@@ -362,7 +367,7 @@
+ 	return 0;
+ }
+ 
+-static void encrypt(void *ctx, u8 *dst, const u8 *src)
++static void serpent_encrypt(void *ctx, u8 *dst, const u8 *src)
+ {
+ 	const u32
+ 		*k = ((struct serpent_ctx *)ctx)->expkey,
+@@ -420,7 +425,7 @@
+ 	d[3] = cpu_to_le32(r3);
+ }
+ 
+-static void decrypt(void *ctx, u8 *dst, const u8 *src)
++static void serpent_decrypt(void *ctx, u8 *dst, const u8 *src)
+ {
+ 	const u32
+ 		*k = ((struct serpent_ctx *)ctx)->expkey,
+@@ -483,18 +488,101 @@
+ 	.cra_u			=	{ .cipher = {
+ 	.cia_min_keysize	=	SERPENT_MIN_KEY_SIZE,
+ 	.cia_max_keysize	=	SERPENT_MAX_KEY_SIZE,
+-	.cia_setkey   		= 	setkey,
+-	.cia_encrypt 		=	encrypt,
+-	.cia_decrypt  		=	decrypt } }
++	.cia_setkey   		= 	serpent_setkey,
++	.cia_encrypt 		=	serpent_encrypt,
++	.cia_decrypt  		=	serpent_decrypt } }
++};
++
++static int tnepres_setkey(void *ctx, const u8 *key, unsigned int keylen, u32 *flags)
++{
++	u8 rev_key[SERPENT_MAX_KEY_SIZE];
++	int i;
++
++	if ((keylen < SERPENT_MIN_KEY_SIZE)
++	    || (keylen > SERPENT_MAX_KEY_SIZE)) {
++		*flags |= CRYPTO_TFM_RES_BAD_KEY_LEN;
++		return -EINVAL;
++	} 
++
++	for (i = 0; i < keylen; ++i)
++		rev_key[keylen - i - 1] = key[i];
++ 
++	return serpent_setkey(ctx, rev_key, keylen, flags);
++}
++
++static void tnepres_encrypt(void *ctx, u8 *dst, const u8 *src)
++{
++	const u32 * const s = (const u32 * const)src;
++	u32 * const d = (u32 * const)dst;
++
++	u32 rs[4], rd[4];
++
++	rs[0] = swab32(s[3]);
++	rs[1] = swab32(s[2]);
++	rs[2] = swab32(s[1]);
++	rs[3] = swab32(s[0]);
++
++	serpent_encrypt(ctx, (u8 *)rd, (u8 *)rs);
++
++	d[0] = swab32(rd[3]);
++	d[1] = swab32(rd[2]);
++	d[2] = swab32(rd[1]);
++	d[3] = swab32(rd[0]);
++}
++
++static void tnepres_decrypt(void *ctx, u8 *dst, const u8 *src)
++{
++	const u32 * const s = (const u32 * const)src;
++	u32 * const d = (u32 * const)dst;
++
++	u32 rs[4], rd[4];
++
++	rs[0] = swab32(s[3]);
++	rs[1] = swab32(s[2]);
++	rs[2] = swab32(s[1]);
++	rs[3] = swab32(s[0]);
++
++	serpent_decrypt(ctx, (u8 *)rd, (u8 *)rs);
++
++	d[0] = swab32(rd[3]);
++	d[1] = swab32(rd[2]);
++	d[2] = swab32(rd[1]);
++	d[3] = swab32(rd[0]);
++}
++
++static struct crypto_alg tnepres_alg = {
++	.cra_name		=	"tnepres",
++	.cra_flags		=	CRYPTO_ALG_TYPE_CIPHER,
++	.cra_blocksize		=	SERPENT_BLOCK_SIZE,
++	.cra_ctxsize		=	sizeof(struct serpent_ctx),
++	.cra_module		=	THIS_MODULE,
++	.cra_list		=	LIST_HEAD_INIT(serpent_alg.cra_list),
++	.cra_u			=	{ .cipher = {
++	.cia_min_keysize	=	SERPENT_MIN_KEY_SIZE,
++	.cia_max_keysize	=	SERPENT_MAX_KEY_SIZE,
++	.cia_setkey   		= 	tnepres_setkey,
++	.cia_encrypt 		=	tnepres_encrypt,
++	.cia_decrypt  		=	tnepres_decrypt } }
+ };
+ 
+ static int __init init(void)
+ {
+-	return crypto_register_alg(&serpent_alg);
++	int ret = crypto_register_alg(&serpent_alg);
++
++	if (ret)
++		return ret;
++
++	ret = crypto_register_alg(&tnepres_alg);
++
++	if (ret)
++		crypto_unregister_alg(&serpent_alg);
++
++	return ret;
+ }
+ 
+ static void __exit fini(void)
+ {
++	crypto_unregister_alg(&tnepres_alg);
+ 	crypto_unregister_alg(&serpent_alg);
+ }
+ 
+@@ -502,5 +590,6 @@
+ module_exit(fini);
+ 
+ MODULE_LICENSE("GPL");
+-MODULE_DESCRIPTION("Serpent Cipher Algorithm");
++MODULE_DESCRIPTION("Serpent and tnepres (kerneli compatible serpent reversed) Cipher Algorithm");
+ MODULE_AUTHOR("Dag Arne Osvik <osvik@ii.uib.no>");
++MODULE_ALIAS("tnepres");
+diff -ur linux-2.4.28.rc1.orig/crypto/tcrypt.c linux-2.4.28.rc1/crypto/tcrypt.c
+--- linux-2.4.28.rc1.orig/crypto/tcrypt.c	2004-10-23 14:19:46.803838752 +0200
++++ linux-2.4.28.rc1/crypto/tcrypt.c	2004-10-23 14:26:05.174190952 +0200
+@@ -64,7 +64,7 @@
+ 	"des", "md5", "des3_ede", "rot13", "sha1", "sha256", "blowfish",
+ 	"twofish", "serpent", "sha384", "sha512", "md4", "aes", "cast6", 
+ 	"arc4", "michael_mic", "deflate", "tea", "xtea", "wp512", 
+-	"wp384", "wp256", NULL
++	"wp384", "wp256", "tnepres", NULL
+ };
+ 
+ static void
+@@ -551,6 +551,10 @@
+ 		test_cipher ("serpent", MODE_ECB, ENCRYPT, serpent_enc_tv_template, SERPENT_ENC_TEST_VECTORS);
+ 		test_cipher ("serpent", MODE_ECB, DECRYPT, serpent_dec_tv_template, SERPENT_DEC_TEST_VECTORS);
+ 		
++		//TNEPRES
++		test_cipher ("tnepres", MODE_ECB, ENCRYPT, tnepres_enc_tv_template, TNEPRES_ENC_TEST_VECTORS);
++		test_cipher ("tnepres", MODE_ECB, DECRYPT, tnepres_dec_tv_template, TNEPRES_DEC_TEST_VECTORS);
++
+ 		//AES
+ 		test_cipher ("aes", MODE_ECB, ENCRYPT, aes_enc_tv_template, AES_ENC_TEST_VECTORS);
+ 		test_cipher ("aes", MODE_ECB, DECRYPT, aes_dec_tv_template, AES_DEC_TEST_VECTORS);
+@@ -638,6 +642,8 @@
+ 		break;
+ 		
+ 	case 9:
++		test_cipher ("serpent", MODE_ECB, ENCRYPT, serpent_enc_tv_template, SERPENT_ENC_TEST_VECTORS);
++		test_cipher ("serpent", MODE_ECB, DECRYPT, serpent_dec_tv_template, SERPENT_DEC_TEST_VECTORS);
+ 		break;
+ 
+ 	case 10:
+@@ -701,6 +707,11 @@
+ 		test_hash("wp256", wp256_tv_template, WP256_TEST_VECTORS);
+ 		break;
+ 
++	case 25:
++		test_cipher ("tnepres", MODE_ECB, ENCRYPT, tnepres_enc_tv_template, TNEPRES_ENC_TEST_VECTORS);
++		test_cipher ("tnepres", MODE_ECB, DECRYPT, tnepres_dec_tv_template, TNEPRES_DEC_TEST_VECTORS);
++		break;
++
+ #ifdef CONFIG_CRYPTO_HMAC
+ 	case 100:
+ 		test_hmac("md5", hmac_md5_tv_template, HMAC_MD5_TEST_VECTORS);
+diff -ur linux-2.4.28.rc1.orig/crypto/tcrypt.h linux-2.4.28.rc1/crypto/tcrypt.h
+--- linux-2.4.28.rc1.orig/crypto/tcrypt.h	2004-10-23 14:19:46.807838100 +0200
++++ linux-2.4.28.rc1/crypto/tcrypt.h	2004-10-23 14:21:33.457462651 +0200
+@@ -1442,6 +1442,9 @@
+ #define SERPENT_ENC_TEST_VECTORS	4
+ #define SERPENT_DEC_TEST_VECTORS	4
+ 
++#define TNEPRES_ENC_TEST_VECTORS	4
++#define TNEPRES_DEC_TEST_VECTORS	4
++
+ struct cipher_testvec serpent_enc_tv_template[] = 
+ {
+ 	{
+@@ -1484,6 +1487,57 @@
+ 	},
+ };
+ 
++struct cipher_testvec tnepres_enc_tv_template[] = 
++{
++	{ /* KeySize=128, PT=0, I=1 */
++		.input	= { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
++		.key    = { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
++		.klen   = 16,
++		.ilen	= 16,
++		.result	= { 0x49, 0xaf, 0xbf, 0xad, 0x9d, 0x5a, 0x34, 0x05, 
++			    0x2c, 0xd8, 0xff, 0xa5, 0x98, 0x6b, 0xd2, 0xdd },
++		.rlen	= 16,
++	}, { /* KeySize=192, PT=0, I=1 */
++		.key	= { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
++		.klen	= 24,
++		.input	= { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
++		.ilen	= 16,
++		.result	= { 0xe7, 0x8e, 0x54, 0x02, 0xc7, 0x19, 0x55, 0x68, 
++			    0xac, 0x36, 0x78, 0xf7, 0xa3, 0xf6, 0x0c, 0x66 },
++		.rlen	= 16,
++	}, { /* KeySize=256, PT=0, I=1 */
++		.key	= { 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
++		.klen	= 32,
++		.input	= { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++			    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
++		.ilen	= 16,
++		.result	= { 0xab, 0xed, 0x96, 0xe7, 0x66, 0xbf, 0x28, 0xcb, 
++			    0xc0, 0xeb, 0xd2, 0x1a, 0x82, 0xef, 0x08, 0x19 },
++		.rlen	= 16,
++	}, { /* KeySize=256, I=257 */
++	        .key	= { 0x1f, 0x1e, 0x1d, 0x1c, 0x1b, 0x1a, 0x19, 0x18,
++			    0x17, 0x16, 0x15, 0x14, 0x13, 0x12, 0x11, 0x10,
++			    0x0f, 0x0e, 0x0d, 0x0c, 0x0b, 0x0a, 0x09, 0x08,
++			    0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 },
++		.klen	= 32,
++		.input	= { 0x0f, 0x0e, 0x0d, 0x0c, 0x0b, 0x0a, 0x09, 0x08,
++			    0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00 },
++		.ilen	= 16,
++		.result	= { 0x5c, 0xe7, 0x1c, 0x70, 0xd2, 0x88, 0x2e, 0x5b, 
++			    0xb8, 0x32, 0xe4, 0x33, 0xf8, 0x9f, 0x26, 0xde },
++		.rlen	= 16,
++	},
++};
++
++
+ struct cipher_testvec serpent_dec_tv_template[] = 
+ {
+ 	{
+@@ -1526,6 +1580,49 @@
+ 	},
+ };
+ 
++struct cipher_testvec tnepres_dec_tv_template[] =
++{
++	{
++		.input	= { 0x41, 0xcc, 0x6b, 0x31, 0x59, 0x31, 0x45, 0x97,
++			    0x6d, 0x6f, 0xbb, 0x38, 0x4b, 0x37, 0x21, 0x28 },
++		.ilen	= 16,
++		.result	= { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
++			    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f },
++		.rlen	= 16,
++	}, {
++		.key	= { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
++			    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f },
++		.klen	= 16,
++		.input	= { 0xea, 0xf4, 0xd7, 0xfc, 0xd8, 0x01, 0x34, 0x47, 
++			    0x81, 0x45, 0x0b, 0xfa, 0x0c, 0xd6, 0xad, 0x6e },
++		.ilen	= 16,
++		.result	= { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
++			    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f },
++		.rlen	= 16,
++	}, {
++		.key	= { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
++			    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
++			    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
++			    0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f },
++		.klen	= 32,
++		.input	= { 0x64, 0xa9, 0x1a, 0x37, 0xed, 0x9f, 0xe7, 0x49, 
++			    0xa8, 0x4e, 0x76, 0xd6, 0xf5, 0x0d, 0x78, 0xee },
++		.ilen	= 16,
++		.result	= { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
++			    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f },
++		.rlen	= 16,
++	}, { /* KeySize=128, I=121 */
++		.key	= { [15] = 0x80 },
++		.klen	= 16,
++		.input	= { 0x3d, 0xda, 0xbf, 0xc0, 0x06, 0xda, 0xab, 0x06, 
++			    0x46, 0x2a, 0xf4, 0xef, 0x81, 0x54, 0x4e, 0x26 },
++		.ilen	= 16,
++		.result	= { [0 ... 15] = 0x00 },
++		.rlen	= 16,
++	},
++};
++
++
+ /* Cast6 test vectors from RFC 2612 */
+ #define CAST6_ENC_TEST_VECTORS	3
+ #define CAST6_DEC_TEST_VECTORS  3
