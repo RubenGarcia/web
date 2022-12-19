@@ -1,0 +1,14 @@
+--- happyhttp.cpp.orig	Tue Mar 21 17:53:22 2017
++++ happyhttp.cpp	Tue Mar 21 18:16:32 2017
+@@ -39,6 +39,11 @@
+ #ifdef WIN32
+ 	#include <winsock2.h>
+ 	#define vsnprintf _vsnprintf
++#ifdef _MSC_VER
++//not #if defined(_WIN32) || defined(_WIN64) because we have strncasecmp in mingw
++#define strncasecmp _strnicmp
++#define strcasecmp _stricmp
++#endif
+ #endif
+ 
+ #include <cstdio>
