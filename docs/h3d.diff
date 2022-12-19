@@ -1,0 +1,20 @@
+diff -ur old/makefile new/makefile
+--- old/makefile	2004-07-28 12:39:17.000000000 +0200
++++ new/makefile	2006-03-16 13:22:46.000000000 +0100
+@@ -59,4 +59,4 @@
+ 	make
+ 
+ clean:
+-	-rm *.o *% $(EJECUTABLE) h1.pov h1.png
++	-rm -f *.o *% $(EJECUTABLE) h1.pov h1.png
+diff -ur old/POVRayFileWriter.C new/POVRayFileWriter.C
+--- old/POVRayFileWriter.C	2004-08-05 12:57:57.000000000 +0200
++++ new/POVRayFileWriter.C	2006-03-16 13:21:12.000000000 +0100
+@@ -21,6 +21,7 @@
+ 
+ #include "POVRayFileWriter.H"
+ #include <fstream>
++#include <cmath>
+ 
+ namespace H3DC
+ {

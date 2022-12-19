@@ -1,0 +1,21 @@
+diff -ur orig/rply.c new/rply.c
+--- orig/rply.c	2017-02-27 10:57:47.543219868 +0100
++++ new/rply.c	2017-02-27 11:02:06.678492094 +0100
+@@ -376,7 +376,7 @@
+     if (error_cb == NULL) error_cb = ply_error_cb;
+     assert(fp);
+     if (!ply_type_check()) {
+-        error_cb(ply, "Incompatible type system");
++        error_cb(NULL, "Incompatible type system");
+         return NULL;
+     }
+     ply = ply_alloc();
+@@ -478,7 +478,7 @@
+     p_ply ply;
+     assert(fp && storage_mode <= PLY_DEFAULT);
+     if (!ply_type_check()) {
+-        error_cb(ply, "Incompatible type system");
++        error_cb(NULL, "Incompatible type system");
+         return NULL;
+     }
+     ply = ply_alloc();

@@ -1,0 +1,59 @@
+<!--?xml version="1.0" encoding="utf-8"?-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/><title>Tesis del departamento
+</title></head>
+<body>
+<p>
+Utilizando el preprocesador de gcc y doxygen, se puede hacer fácilmente un
+gráfico con las relaciones doctor/doctorando de un grupo.
+El preprocesador interno de doxygen no parece funcionar en todos los casos,
+así que se recomienda el uso de gcc -E
+<br/>
+Como ejemplo, he realizado el gráfico del departamento.<br/>
+<a href="http://www.ugr.es/~ruben/tesisDpto/doc/html/inherits.html">
+Esquema completo</a> 
+(
+<a href="html/inherits.html">local copy</a>)<br/>
+<a href="http://www.ugr.es/~ruben/tesisDpto/doc/html/classRubenGarcia.html">
+Yo, como doctorando de Carlos Ureña</a>
+(
+<a href="html/classRubenGarcia.html">local copy</a>)<br/>
+</p><p>
+Fuentes (GPLv2):<br/>
+<a href="tesis.H">Definiciones</a><br/>
+<a href="Doxyfile.diff">Parche para el fichero generado por defecto por
+doxygen -g</a><br/><br/>
+Para otros proyectos, usar #include "tesis.H" y añadir la siguiente 
+información:<br/><code>
+doctor DOCTOREXTERNO externo<br/>
+doctor DOCTORINTERNO : director DOCTOR {};<br/>
+doctor DOCTORINTERNO : director DOCTOR, director DOCTOR {}; <br/>
+doctorando DOCTORANDO : dirige DOCTOR {};<br/>
+doctorando DOCTORANDO : dirige DOCTOR, dirige DOCTOR {};<br/></code>
+donde DOCTOREXTERNO es un doctor externo al grupo, DOCTORINTERNO es
+un doctor perteneciente al grupo, y DOCTORANDO es un doctorando del grupo.
+Se puede usar #include para organizar un grupo grande.
+Para generar la documentación, ejecutar una vez<br/>
+<code>doxygen -g<br/>
+patch -p0 &lt; Doxyfile.diff<br/></code>
+y ejecutar<br/> 
+<code>gcc -E File.C -o Final.C<br/>
+doxygen<br/></code>
+cada vez que se añada nueva información. El fichero doc/html/inherits.html
+contiene el diagrama de clases.
+<br/>
+Los dos siguientes ficheros son un ejemplo con los datos del departamento:
+<br/>
+<a href="tesis.C">Fichero con las relaciones de doctorandos</a><br/>
+<a href="IngSoft.C">Grupo GEDES 
+(Especificación, desarrollo y evolución de software)</a> <br/>
+</p>
+<p>
+  <a href="http://validator.w3.org/check?uri=referer">
+<img src="../w3.org/valid-xhtml11" alt="Valid XHTML 1.1!" width="88" height="31"/></a>
+</p>
+<p><a href="http://www.ugr.es/%7Eruben/">Rubén García's Web Page</a></p>
+
+
+</body></html>
