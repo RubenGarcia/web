@@ -1,0 +1,115 @@
+<!--?xml version="1.0" encoding="utf-8"?-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<link rel="stylesheet" href="../carlos.css" type="text/css"/>
+<title>
+Patch for tsocks for TOR
+</title>
+</head>
+<body>
+<h1>
+Patch for tsocks 1.8beta5
+</h1>
+<h1>On October 2008, <a href="http://code.google.com/p/torsocks/">torsocks</a> was created,
+rendering these patches obsolete</h1>
+<h1>This page is kept for historical purposes. Use torsocks.</h1>
+<p>
+The <a href="http://tor.eff.org/">TOR</a> project lists a series of patches
+for tsocks which are useful to integrate tsocks with TOR.
+These patches cannot be applied sequencially, since they conflict with each other.
+Here is my combined patch, except for the MacOSX which I can't test.
+See the changelog for details.<br/>
+Robert Hogan forked tsocks independently with the same purpose: Tor integration.
+His patches mainly addressed compiler warnings 
+but also made the SOCKS defaults sensible for a Tor user, and were integrated
+in <a href="http://www.anonymityanywhere.com/tork/">TorK</a>.
+<br/>
+We have decided to unify our patches. 
+The current version can be downloaded using CVS from TorK's home page:<br/>
+</p>
+<h2>CVS access</h2>
+<p>
+cvs -z3 -d:pserver:anonymous@tork.cvs.sourceforge.net:/cvsroot/tork co -P 
+torsocks</p>
+<p>
+Since Oct 2008, the tsocks in TorK was split from the rest of TorK and 
+can now be fetched at &nbsp; <a href="http://code.google.com/p/torsocks/">Torsocks</a>.</p>
+<h2>Announcement at or-dev by Robert Hogan</h2>
+<p>
+I reproduce the last announcement here (thanks Robert):
+</p><p>
+This module contains all the patches listed at:
+<a href="http://tork.cvs.sourceforge.net/tork/torsocks/patches/">
+http://tork.cvs.sourceforge.net/tork/torsocks/patches/</a></p><p>
+It also contains the following additional improvements:</p><p>
+
+- Support for gethostbyaddr.<br/> 
+- Ported to an automake-based build system.<br/>
+- A history of all applied patches.<br/>
+- Various documentation/packaging related fixes suggested by Patrick Matthei.
+</p><p>
+The following are items I (Robert) hope to add in the near future:</p><p>
+
+- Fully update the documentation to reflect the fact that this is a new fork of 
+tsocks and is maintained separately.<br/>
+- More support for isc library calls.<br/>
+- Make thread-safe with --enable-threads.<br/>
+- Modify tsocks further to play nicely with tor.  For  example, prevent nonlocal 
+UDP traffic from being sent at all.<br/>
+</p>
+<h2>Download Tsocks</h2>
+<p>
+The recommended version is the CVS access above. The versions here are 
+currently considered obsolete.</p><p>
+1.8.4 <a href="http://www.ugr.es/%7Eruben/tsocks/tsocks-1.8.4.tar.bz2">tar.bz2</a> <a href="http://www.ugr.es/%7Eruben/tsocks/tsocks-1.8.4.patch.bz2">Diff</a><br/>
+1.8.3 <a href="http://www.ugr.es/%7Eruben/tsocks/tsocks-1.8.3.tar.bz2">tar.bz2</a> <a href="http://www.ugr.es/%7Eruben/tsocks/tsocks-1.8.3.patch.bz2">Diff</a><br/>
+1.8.2.bsd  <a href="http://www.ugr.es/%7Eruben/tsocks/tsocks-1.8.2.bsd.patch.bz2">Diff</a><br/>
+1.8.2 <a href="http://www.ugr.es/%7Eruben/tsocks/tsocks-1.8.2.tar.bz2">tar.bz2</a> <a href="http://www.ugr.es/%7Eruben/tsocks/tsocks-1.8.2.patch.bz2">Diff</a><br/>
+1.8.1 <a href="http://www.ugr.es/%7Eruben/tsocks/tsocks-1.8.1.tar.bz2">tar.bz2</a> <a href="http://www.ugr.es/%7Eruben/tsocks/tsocks-1.8.1.patch.bz2">Diff</a>
+</p>
+<h2>TODO</h2>
+<p>The <a href="http://www.ugr.es/%7Eruben/tsocks/2_tsocks-1.8_macosx.patch">MacOSX</a> patch has not been applied, since I can't test the results.</p>
+<h2>Changelog</h2>
+<h3>torsocks</h3>
+<p>Integration with the tsocks from <a href="http://www.anonymityanywhere.com/tork/">TorK</a> by Robert Hogan</p>
+<h3>tsocks-1.8.4 (2008-05-21)</h3>
+<p>Bugfix for configure about poll() prototype detection. Thanks to <a href="http://www.taronga.com/%7Epeter/">Peter da Silva</a></p>
+<h3>tsocks-1.8.3 (2006-11-24)</h3>
+<p>Integration of BSD support. Thanks to George Shaffer.</p>
+<h3>tsocks-1.8.2.bsd (2006-11-23)</h3>
+<p>BSD specifig patches which break the linux build.</p>
+<h3>tsocks-1.8.2 (2006-11-22)</h3>
+<p>Added the part of the BSD patches with bugfixes which apply to all platforms.</p>
+<h3>tsocks-1.8.1 (2006-11-17)</h3>
+<p>
+The following <a href="http://tor.eff.org/">TOR</a> project patches for tsocks were integrated into a combined patch:
+</p><ul>
+<li><a href="http://www.totalinfosecurity.com/patches/tor.php">Patch</a>
+ from Total Information Security to resolve the DNS leakage problem and 
+allow access to addresses with nonstandard hostnames (e.g. those ending 
+in .onion)</li> 
+<li><a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=239025">Patch</a> from Peter Palfrader to resolve an infinite loop that occurs when the server just disconnects when tsocks expects a reply.</li>
+<li><a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=240429">Patch</a> from Peter Palfrader to intercept getpeername()</li>
+<li><a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=311805">Patch</a> from Roderick Schertler to fix a minor bug in the documentation</li>
+<li><a href="http://archives.seul.org/or/dev/Apr-2006/msg00002.html">Patch</a> from Roger Dingledine to only call 127.0.0.0/8 as local if the config file doesn't provide one</li>
+</ul><p>
+(patches 1, 3, 4, 5 and 7 from
+<a href="http://wiki.noreply.org/noreply/TheOnionRouter/TSocksPatches">
+the list at TOR</a>)
+Patches 2 (for osx) and 6 (for bsd) were not applied because I don't have access to
+osx or bsd and can't test them. (And the bsd patch breaks linux)
+</p>
+<h3><a href="http://sourceforge.net/project/showfiles.php?group_id=17338">tsocks-1.8 beta 5 (2002-10-22)</a></h3>
+<p>Original abandoned version from <a href="http://sourceforge.net/">Sourceforge</a></p>
+<p>
+<a href="http://validator.w3.org/check?uri=referer">
+<img src="../w3.org/valid-xhtml11" 
+alt="Valid XHTML 1.1" width="88" height="31"/></a>
+
+</p>
+<p><a href="http://www.ugr.es/%7Eruben/">Rubén García's Web Page</a></p>
+
+
+
+</body></html>
